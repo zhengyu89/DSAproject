@@ -47,6 +47,7 @@ public:
     int getSize() const { return size; }
     bool isEmpty() const { return size == 0; }
     StudentNode* getHead() {return head;}
+    void registerStudent(StudentList& studentList);
 };
 
 // Staff Node and List
@@ -71,6 +72,7 @@ public:
     Staff* searchById(string staffId);
     int getSize() const { return size; }
     bool isEmpty() const { return size == 0; }
+    void registerStaff(StaffList& staffList);
 };
 
 // Vehicle Node and List
@@ -253,6 +255,43 @@ Student* StudentList::searchByMatric(string matricNum) {
     return nullptr;
 }
 
+void StudentList::registerStudent(StudentList& studentList)
+{
+    string matricNum, name, password;
+    int year;
+    
+    cout << "\n=== Student Registration ===" << endl;
+    cout << "Enter Matric Number: ";
+    cin >> matricNum;
+    
+    // Check if matric number already exists
+    if (studentList.searchByMatric(matricNum) != NULL) {
+        cout << "A student with this matric number already exists!" << endl;
+        return;
+    }
+    
+    cout << "Enter Full Name: ";
+    cin.ignore();
+    getline(cin, name);
+    
+    cout << "Enter Password: ";
+    cin >> password;
+    
+    cout << "Enter Year of Study (1-4): ";
+    cin >> year;
+    
+    // Validate year of study
+    if (year < 1 || year > 4) {
+        cout << "Invalid year of study! Must be between 1 and 4." << endl;
+        return;
+    }
+    
+    // Create new student and add to list
+    Student* newStudent = new Student(matricNum, name, password, year);
+    studentList.insertAtEnd(newStudent);
+    cout << "Student registration successful!" << endl;
+}
+
 // StaffList implementations
 void StaffList::insertAtEnd(Staff* staff) {
     StaffNode* newNode = new StaffNode(staff);
@@ -291,6 +330,32 @@ Staff* StaffList::searchById(string staffId) {
         current = current->next;
     }
     return nullptr;
+}
+
+void StaffList::registerStaff(StaffList& staffList) {
+    string staffId, name, password;
+    
+    cout << "\n=== Staff Registration ===" << endl;
+    cout << "Enter Staff ID: ";
+    cin >> staffId;
+    
+    // Check if staff ID already exists
+    if (staffList.searchById(staffId) != nullptr) {
+        cout << "A staff member with this ID already exists!" << endl;
+        return;
+    }
+    
+    cout << "Enter Full Name: ";
+    cin.ignore();
+    getline(cin, name);
+    
+    cout << "Enter Password: ";
+    cin >> password;
+    
+    // Create new staff and add to list
+    Staff* newStaff = new Staff(staffId, name, password);
+    staffList.insertAtEnd(newStaff);
+    cout << "Staff registration successful!" << endl;
 }
 
 // VehicleList implementations
@@ -854,7 +919,23 @@ int main() {
             }
         }
         else if (choice == "3") {
-            cout<<"Tengah buat"<<endl;
+            cout << "\n=== Registration ===" << endl;
+            cout << "1. Student Registration" << endl;
+            cout << "2. Staff Registration" << endl;
+            cout << "Enter choice: ";
+            
+            string regChoice;
+            cin >> regChoice;
+            
+            if (regChoice == "1") {
+                studentList.registerStudent(studentList);
+            }
+            else if (regChoice == "2") {
+                staffList.registerStaff(staffList);
+            }
+            else {
+                cout << "Invalid choice!" << endl;
+            }
         }
         else if (choice == "4") {
             cout << "Thank you for using the Parking Sticker Management System!" << endl;
