@@ -15,12 +15,12 @@ class Sticker;
 enum class VehicleSortType {
     MODEL,
     COLOR,
-    NAME
+    DRIVER_ID
 };
 
 enum class StudentSortType {
     LAST_REGISTER,
-    APPLICATION_DATE,
+    STATUS,
     NAME
 };
 
@@ -188,19 +188,15 @@ private:
     string carColor;
     string carModel;
     string plateNumber;
-    Student* owner;
 
 public:
     Vehicle(string id, string color, string model, string plate)
-        : vehicleID(id), carColor(color), carModel(model), plateNumber(plate), owner(NULL) {}
+        : vehicleID(id), carColor(color), carModel(model), plateNumber(plate) {}
         
     string getVehicleID() const { return vehicleID; }
     string getColor() const { return carColor; }
     string getModel() const { return carModel; }
     string getPlateNumber() const { return plateNumber; }
-    Student* getowner() const{ return owner;}
-
-    void setowner(Student* student){ owner=student;}
     
 };
 
@@ -352,7 +348,6 @@ bool Student::applySticker(Vehicle* vehicle, string applicationDate) {
     );
 
     applicationHistory.push_back(newApplication);
-    vehicle->setowner(this);
     vehicles->insertAtEnd(vehicle);
 
     cout << "Sticker application submitted successfully for vehicle " 
@@ -436,10 +431,9 @@ void Staff::bubbleSortVehicles(vector<Vehicle*>& vehicles, VehicleSortType sortT
                 case VehicleSortType::COLOR:
                     shouldSwap = vehicles[j]->getColor() > vehicles[j + 1]->getColor();
                     break;
-                case VehicleSortType::NAME:
-                    if(vehicles[j]->getowner() && vehicles[j+1]->getowner()){
-                        shouldSwap = vehicles[j]->getowner()->getName() >vehicles[j+1]->getowner()->getName();
-                    }
+                case VehicleSortType::DRIVER_ID:
+                    // Implementation depends on how you store driver ID
+                    break;
             }
             
             if (shouldSwap) {
@@ -475,14 +469,17 @@ void Staff::bubbleSortStudents(vector<Student*>& students, StudentSortType sortT
                     break;
                 }
                 
-                case StudentSortType::APPLICATION_DATE: {
+                case StudentSortType::STATUS: {
                     bool hasApp1 = !students[j]->applicationHistory.empty();
                     bool hasApp2 = !students[j + 1]->applicationHistory.empty();
-                    
-                    if (!hasApp1 && hasApp2) shouldSwap = true;
-                    else if (hasApp1 && hasApp2) {
-                        shouldSwap = students[j]->applicationHistory[0]->getDate() > 
-                                   students[j + 1]->applicationHistory[0]->getDate();
+
+                    if (!hasApp1 && hasApp2) {
+                        shouldSwap = true;  // Students with no history are considered "lesser"
+                    } else if (hasApp1 && hasApp2) {
+                        // Compare the status of the last application in the history
+                        Status::StatusType status1 = students[j]->applicationHistory.back()->getStatus();
+                        Status::StatusType status2 = students[j + 1]->applicationHistory.back()->getStatus();
+                        shouldSwap = status1 > status2;  // Adjust comparison for desired order
                     }
                     break;
                 }
@@ -506,7 +503,7 @@ void Staff::displayVehicleTable(vector<Vehicle*>& vehicles) {
          << setw(15) << "Plate Number" 
          << setw(20) << "Model" 
          << setw(15) << "Color" 
-         << setw(15) << "Name" << endl;
+         << setw(15) << "Driver ID" << endl;
     cout << setfill('-') << setw(80) << "-" << endl;
     cout << setfill(' ');
 
@@ -516,7 +513,7 @@ void Staff::displayVehicleTable(vector<Vehicle*>& vehicles) {
              << setw(15) << vehicle->getPlateNumber()
              << setw(20) << vehicle->getModel()
              << setw(15) << vehicle->getColor()
-             << setw(15) << vehicle->getowner()->getName() << endl;
+             << setw(15) << "DRIVER_ID" << endl;
     }
     cout << setfill('-') << setw(80) << "-" << endl;
 }
@@ -621,30 +618,88 @@ int main() {
 
     // Create sample data
     // Sample students
-    Student* student1 = new Student("TP123456", "John Doe", "pass123", 2);
-    Student* student2 = new Student("TP789012", "Jane Smith", "pass456", 3);
+    Student* student1 = new Student("A23CS5016", "John Doe", "stu123", 2);
+    Student* student2 = new Student("A23CS5017", "Jane Smith", "pass456", 3);
+    Student* student3 = new Student("A23CS5018", "Alice Brown", "alice789", 2);
+    Student* student4 = new Student("A23CS5019", "Bob White", "bob2023", 4);
+    Student* student5 = new Student("A23CS5020", "Charlie Green", "charlie007", 2);
+    Student* student6 = new Student("A23CS5021", "Diana Prince", "diana456", 3);
+    Student* student7 = new Student("A23CS5022", "Edward Black", "edward123", 4);
+    Student* student8 = new Student("A23CS5023", "Fiona Hill", "fiona789", 2);
+    Student* student9 = new Student("A23CS5024", "George King", "george2023", 2);
+    Student* student10 = new Student("A23CS5025", "Hannah Taylor", "hannah456", 3);
+
     studentList.insertAtEnd(student1);
     studentList.insertAtEnd(student2);
+    studentList.insertAtEnd(student3);
+    studentList.insertAtEnd(student4);
+    studentList.insertAtEnd(student5);
+    studentList.insertAtEnd(student6);
+    studentList.insertAtEnd(student7);
+    studentList.insertAtEnd(student8);
+    studentList.insertAtEnd(student9);
+    studentList.insertAtEnd(student10);
 
     // Sample staff
-    Staff* staff1 = new Staff("ST001", "Admin User", "adminpass");
+    Staff* staff1 = new Staff("ST001", "Admin User", "admin123");
+    Staff* staff2 = new Staff("ST002", "Manager 1", "manager123");
+    Staff* staff3 = new Staff("ST003", "Supervisor A", "superA456");
+    Staff* staff4 = new Staff("ST004", "HR Officer", "hr789");
+    Staff* staff5 = new Staff("ST005", "IT Support", "itpass2023");
+    Staff* staff6 = new Staff("ST006", "Finance Lead", "finance007");
+    Staff* staff7 = new Staff("ST007", "Research Assistant", "research123");
+    Staff* staff8 = new Staff("ST008", "Lab Technician", "labtech456");
+    Staff* staff9 = new Staff("ST009", "Registrar", "regpass2023");
+    Staff* staff10 = new Staff("ST010", "Dean Office", "dean1234");
+
     staffList.insertAtEnd(staff1);
+    staffList.insertAtEnd(staff2);
+    staffList.insertAtEnd(staff3);
+    staffList.insertAtEnd(staff4);
+    staffList.insertAtEnd(staff5);
+    staffList.insertAtEnd(staff6);
+    staffList.insertAtEnd(staff7);
+    staffList.insertAtEnd(staff8);
+    staffList.insertAtEnd(staff9);
+    staffList.insertAtEnd(staff10);
 
     // Sample vehicles
-    Vehicle* vehicle1 = new Vehicle("V001", "Red", "Toyota Camry", "ABC123");
+    Vehicle* vehicle1 = new Vehicle("V001", "Red", "Toyota Corolla", "ABC123");
     Vehicle* vehicle2 = new Vehicle("V002", "Blue", "Honda Civic", "XYZ789");
+    Vehicle* vehicle3 = new Vehicle("V003", "Black", "Ford Mustang", "MUS456");
+    Vehicle* vehicle4 = new Vehicle("V004", "White", "Tesla Model 3", "TESLA99");
+    Vehicle* vehicle5 = new Vehicle("V005", "Gray", "Chevrolet Malibu", "CHEV123");
+    Vehicle* vehicle6 = new Vehicle("V006", "Silver", "BMW X5", "BMWX500");
+    Vehicle* vehicle7 = new Vehicle("V007", "Green", "Subaru Forester", "SUBARU7");
+    Vehicle* vehicle8 = new Vehicle("V008", "Yellow", "Jeep Wrangler", "JEEP888");
+    Vehicle* vehicle9 = new Vehicle("V009", "Orange", "Mazda CX-5", "MAZDA09");
+    Vehicle* vehicle10 = new Vehicle("V010", "Purple", "Volkswagen Golf", "VW4567");
+
     vehicleList.insertAtEnd(vehicle1);
     vehicleList.insertAtEnd(vehicle2);
+    vehicleList.insertAtEnd(vehicle3);
+    vehicleList.insertAtEnd(vehicle4);
+    vehicleList.insertAtEnd(vehicle5);
+    vehicleList.insertAtEnd(vehicle6);
+    vehicleList.insertAtEnd(vehicle7);
+    vehicleList.insertAtEnd(vehicle8);
+    vehicleList.insertAtEnd(vehicle9);
+    vehicleList.insertAtEnd(vehicle10);
 
     // Add sample applications
     student1->applySticker(vehicle1, "2025-01-10");
     student2->applySticker(vehicle2, "2025-01-15");
+    student5->applySticker(vehicle7, "2025-02-01");
+    student8->applySticker(vehicle3, "2025-02-05");
+    student10->applySticker(vehicle9, "2025-02-10");
+
 
     while (true) {
         cout << "\n=== Parking Sticker Management System ===" << endl;
         cout << "1. Student Login" << endl;
         cout << "2. Staff Login" << endl;
-        cout << "3. Exit" << endl;
+        cout << "3. Register" <<endl;
+        cout << "4. Exit" << endl;
         cout << "Choose option: ";
         
         string choice;
@@ -739,7 +794,7 @@ int main() {
                         cout << "\nSort by:" << endl;
                         cout << "1. Model" << endl;
                         cout << "2. Color" << endl;
-                        cout << "3. Name" << endl;
+                        cout << "3. Driver ID" << endl;
                         cout << "Choose sorting method: ";
                         string sortChoice;
                         cin >> sortChoice;
@@ -747,14 +802,14 @@ int main() {
                         VehicleSortType sortType;
                         if (sortChoice == "1") sortType = VehicleSortType::MODEL;
                         else if (sortChoice == "2") sortType = VehicleSortType::COLOR;
-                        else sortType = VehicleSortType::NAME;
+                        else sortType = VehicleSortType::DRIVER_ID;
                         
                         currentStaff->viewVehicleInfo(&vehicleList, sortType);
                     }
                     else if (staffChoice == "2") {
                         cout << "\nSort by:" << endl;
                         cout << "1. Last Register" << endl;
-                        cout << "2. Application Date" << endl;
+                        cout << "2. Status" << endl;
                         cout << "3. Name" << endl;
                         cout << "Choose sorting method: ";
                         string sortChoice;
@@ -762,7 +817,7 @@ int main() {
                         
                         StudentSortType sortType;
                         if (sortChoice == "1") sortType = StudentSortType::LAST_REGISTER;
-                        else if (sortChoice == "2") sortType = StudentSortType::APPLICATION_DATE;
+                        else if (sortChoice == "2") sortType = StudentSortType::STATUS;
                         else sortType = StudentSortType::NAME;
                         
                         currentStaff->viewStudentInfo(&studentList, sortType);
@@ -799,6 +854,9 @@ int main() {
             }
         }
         else if (choice == "3") {
+            cout<<"Tengah buat"<<endl;
+        }
+        else if (choice == "4") {
             cout << "Thank you for using the Parking Sticker Management System!" << endl;
             break;
         }
@@ -816,4 +874,3 @@ int main() {
 
     return 0;
 }
-
