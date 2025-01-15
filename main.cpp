@@ -737,29 +737,19 @@ int main() {
     Vehicle* vehicle3 = new Vehicle("V003", "Black", "Ford Mustang", "MUS456");
     Vehicle* vehicle4 = new Vehicle("V004", "White", "Tesla Model 3", "TESLA99");
     Vehicle* vehicle5 = new Vehicle("V005", "Gray", "Chevrolet Malibu", "CHEV123");
-    Vehicle* vehicle6 = new Vehicle("V006", "Silver", "BMW X5", "BMWX500");
-    Vehicle* vehicle7 = new Vehicle("V007", "Green", "Subaru Forester", "SUBARU7");
-    Vehicle* vehicle8 = new Vehicle("V008", "Yellow", "Jeep Wrangler", "JEEP888");
-    Vehicle* vehicle9 = new Vehicle("V009", "Orange", "Mazda CX-5", "MAZDA09");
-    Vehicle* vehicle10 = new Vehicle("V010", "Purple", "Volkswagen Golf", "VW4567");
 
     vehicleList.insertAtEnd(vehicle1);
     vehicleList.insertAtEnd(vehicle2);
     vehicleList.insertAtEnd(vehicle3);
     vehicleList.insertAtEnd(vehicle4);
     vehicleList.insertAtEnd(vehicle5);
-    vehicleList.insertAtEnd(vehicle6);
-    vehicleList.insertAtEnd(vehicle7);
-    vehicleList.insertAtEnd(vehicle8);
-    vehicleList.insertAtEnd(vehicle9);
-    vehicleList.insertAtEnd(vehicle10);
 
     // Add sample applications
     student1->applySticker(vehicle1, "2025-01-10");
     student2->applySticker(vehicle2, "2025-01-15");
-    student5->applySticker(vehicle7, "2025-02-01");
-    student8->applySticker(vehicle3, "2025-02-05");
-    student10->applySticker(vehicle9, "2025-02-10");
+    student5->applySticker(vehicle3, "2025-02-01");
+    student8->applySticker(vehicle4, "2025-02-05");
+    student10->applySticker(vehicle5, "2025-02-10");
 
 
     while (true) {
