@@ -150,6 +150,7 @@ public:
     string getPassword() const { return student_password; }
     int getYearOfStudy() const { return yearOfStudy; }
     bool applySticker(Vehicle* vehicle, string applicationDate);
+    bool initapplySticker(Vehicle* vehicle, string applicationDate);
     void viewStatus();
     void updateInfo();
 };
@@ -421,6 +422,20 @@ bool Student::applySticker(Vehicle* vehicle, string applicationDate) {
 
     cout << "Sticker application submitted successfully for vehicle " 
          << vehicle->getPlateNumber() << endl;
+    return true;
+}
+
+bool Student::initapplySticker(Vehicle* vehicle, string applicationDate) {
+    Status* newApplication = new Status(
+        studentMatricNumber,
+        vehicle->getVehicleID(),
+        Status::PENDING,
+        applicationDate
+    );
+
+    applicationHistory.push_back(newApplication);
+    vehicle->setowner(this);
+    vehicles->insertAtEnd(vehicle);
     return true;
 }
 
@@ -748,11 +763,11 @@ int main() {
     vehicleList.insertAtEnd(vehicle5);
 
     // Add sample applications
-    student1->applySticker(vehicle1, "2025-01-10");
-    student2->applySticker(vehicle2, "2025-01-15");
-    student5->applySticker(vehicle3, "2025-02-01");
-    student8->applySticker(vehicle4, "2025-02-05");
-    student10->applySticker(vehicle5, "2025-02-10");
+    student1->initapplySticker(vehicle1, "2025-01-10");
+    student2->initapplySticker(vehicle2, "2025-01-15");
+    student5->initapplySticker(vehicle3, "2025-02-01");
+    student8->initapplySticker(vehicle4, "2025-02-05");
+    student10->initapplySticker(vehicle5, "2025-02-10");
 
 
     while (true) {
