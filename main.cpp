@@ -126,7 +126,56 @@ private:
     string applicationDate;
 };
 
-// Updated Student class with new function prototypes
+// Stack for status
+class StatusStack {
+private:
+    static const int MAX_SIZE = 50; // Maximum size of stack
+    Status* arr[MAX_SIZE];
+    int top;
+
+public:
+    StatusStack() : top(-1) {}
+    
+    bool push(Status* status) {
+        if (top >= MAX_SIZE - 1) {
+            cout << "Stack overflow - Cannot add more applications" << endl;
+            return false;
+        }
+        arr[++top] = status;
+        return true;
+    }
+    
+    Status* pop() {
+        if (isEmpty()) {
+            return nullptr;
+        }
+        return arr[top--];
+    }
+    
+    Status* stackTop() const {
+        if (isEmpty()) {
+            return nullptr;
+        }
+        return arr[top];
+    }
+    
+    bool isEmpty() const {
+        return top == -1;
+    }
+    
+    int size() const {
+        return top + 1;
+    }
+    
+    // Function to get all statuses for display purposes
+    void getAllStatuses(vector<Status*>& statuses) const {
+        statuses.clear();
+        for (int i = 0; i <= top; i++) {
+            statuses.push_back(arr[i]);
+        }
+    }
+};
+
 class Student {
 private:
     string studentMatricNumber;
@@ -134,10 +183,9 @@ private:
     string student_password;
     int yearOfStudy;
     VehicleList* vehicles;
-    
+    StatusStack applicationHistory;
 
 public:
-    vector<Status*> applicationHistory;
     Student(string matricNum, string name, string password, int year)
         : studentMatricNumber(matricNum), student_name(name),
           student_password(password), yearOfStudy(year) {
@@ -151,6 +199,7 @@ public:
     int getYearOfStudy() const { return yearOfStudy; }
     bool applySticker(Vehicle* vehicle, string applicationDate);
     bool initapplySticker(Vehicle* vehicle, string applicationDate);
+    StatusStack& getApplicationHistory() { return applicationHistory; }
     void viewStatus();
     void updateInfo();
 };
@@ -416,7 +465,11 @@ bool Student::applySticker(Vehicle* vehicle, string applicationDate) {
         applicationDate
     );
 
-    applicationHistory.push_back(newApplication);
+    if (!applicationHistory.push(newApplication)) {
+        delete newApplication;
+        return false;
+    }
+
     vehicle->setowner(this);
     vehicles->insertAtEnd(vehicle);
 
@@ -433,14 +486,18 @@ bool Student::initapplySticker(Vehicle* vehicle, string applicationDate) {
         applicationDate
     );
 
-    applicationHistory.push_back(newApplication);
+    if (!applicationHistory.push(newApplication)) {
+        delete newApplication;
+        return false;
+    }
+
     vehicle->setowner(this);
     vehicles->insertAtEnd(vehicle);
     return true;
 }
 
 void Student::viewStatus() {
-    if (applicationHistory.empty()) {
+    if (applicationHistory.isEmpty()) {
         cout << "No application history found." << endl;
         return;
     }
@@ -448,7 +505,10 @@ void Student::viewStatus() {
     cout << "\nApplication History for " << student_name << ":" << endl;
     cout << "----------------------------------------" << endl;
 
-    for (Status* status : applicationHistory) {
+    vector<Status*> statuses;
+    applicationHistory.getAllStatuses(statuses);
+
+    for (Status* status : statuses) {
         cout << "Date: " << status->getDate() << endl;
         cout << "Vehicle ID: " << status->getVehicleId() << endl;
         cout << "Status: ";
@@ -544,27 +604,27 @@ void Staff::bubbleSortStudents(vector<Student*>& students, StudentSortType sortT
                     break;
                     
                 case StudentSortType::LAST_REGISTER: {
-                    bool hasApp1 = !students[j]->applicationHistory.empty();
-                    bool hasApp2 = !students[j + 1]->applicationHistory.empty();
+                    bool hasApp1 = !students[j]->getApplicationHistory().isEmpty();
+                    bool hasApp2 = !students[j + 1]->getApplicationHistory().isEmpty();
                     
                     if (!hasApp1 && hasApp2) shouldSwap = true;
                     else if (hasApp1 && hasApp2) {
-                        shouldSwap = students[j]->applicationHistory.back()->getDate() < 
-                                   students[j + 1]->applicationHistory.back()->getDate();
+                        shouldSwap = students[j]->getApplicationHistory().stackTop()->getDate() < 
+                                   students[j + 1]->getApplicationHistory().stackTop()->getDate();
                     }
                     break;
                 }
                 
                 case StudentSortType::STATUS: {
-                    bool hasApp1 = !students[j]->applicationHistory.empty();
-                    bool hasApp2 = !students[j + 1]->applicationHistory.empty();
+                    bool hasApp1 = !students[j]->getApplicationHistory().isEmpty();
+                    bool hasApp2 = !students[j + 1]->getApplicationHistory().isEmpty();
 
                     if (!hasApp1 && hasApp2) {
                         shouldSwap = true;  // Students with no history are considered "lesser"
                     } else if (hasApp1 && hasApp2) {
                         // Compare the status of the last application in the history
-                        Status::StatusType status1 = students[j]->applicationHistory.back()->getStatus();
-                        Status::StatusType status2 = students[j + 1]->applicationHistory.back()->getStatus();
+                        Status::StatusType status1 = students[j]->getApplicationHistory().stackTop()->getStatus();
+                        Status::StatusType status2 = students[j + 1]->getApplicationHistory().stackTop()->getStatus();
                         shouldSwap = status1 > status2;  // Adjust comparison for desired order
                     }
                     break;
@@ -618,8 +678,8 @@ void Staff::displayStudentTable(vector<Student*>& students) {
 
     for (const auto& student : students) {
         string status = "No Application";
-        if (!student->applicationHistory.empty()) {
-            Status* lastStatus = student->applicationHistory.back();
+        if (!student->getApplicationHistory().isEmpty()) {
+            Status* lastStatus = student->getApplicationHistory().stackTop();
             switch (lastStatus->getStatus()) {
                 case Status::PENDING: status = "Pending"; break;
                 case Status::APPROVED: status = "Approved"; break;
@@ -631,8 +691,8 @@ void Staff::displayStudentTable(vector<Student*>& students) {
              << setw(15) << student->getMatricNumber()
              << setw(25) << student->getName()
              << setw(15) << student->getYearOfStudy()
-             << setw(20) << (student->applicationHistory.empty() ? "N/A" : 
-                            student->applicationHistory.back()->getDate())
+             << setw(20) << (student->getApplicationHistory().isEmpty() ? "N/A" : 
+                            student->getApplicationHistory().stackTop()->getDate())
              << setw(25) << status << endl;
     }
     cout << setfill('-') << setw(100) << "-" << endl;
@@ -675,8 +735,8 @@ Student* Staff::searchStudent(StudentList* studentList, string searchTerm) {
 }
 
 void Staff::approveSticker(Student* student) {
-    if (!student->applicationHistory.empty()) {
-        Status* currentStatus = student->applicationHistory.back();
+    if (!student->getApplicationHistory().isEmpty()) {
+        Status* currentStatus = student->getApplicationHistory().stackTop();
         if (currentStatus->getStatus() == Status::PENDING) {
             Status* newStatus = new Status(
                 student->getMatricNumber(),
@@ -684,7 +744,7 @@ void Staff::approveSticker(Student* student) {
                 Status::APPROVED,
                 currentStatus->getDate()
             );
-            student->applicationHistory.push_back(newStatus);
+            student->getApplicationHistory().push(newStatus);
             cout << "Sticker application approved for student " 
                  << student->getMatricNumber() << endl;
         } else {
