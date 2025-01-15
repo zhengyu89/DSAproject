@@ -44,6 +44,7 @@ public:
     void insertAtEnd(Student* student);
     void remove(Student* student);
     Student* searchByMatric(string matricNum);
+    Student* searchByMatric(string matricNum, StudentNode* current);
     int getSize() const { return size; }
     bool isEmpty() const { return size == 0; }
     StudentNode* getHead() {return head;}
@@ -149,8 +150,6 @@ public:
     string getName() const { return student_name; }
     string getPassword() const { return student_password; }
     int getYearOfStudy() const { return yearOfStudy; }
-
-    // New function prototypes
     bool applySticker(Vehicle* vehicle, string applicationDate);
     void viewStatus();
     void updateInfo();
@@ -244,15 +243,19 @@ void StudentList::remove(Student* student) {
     }
 }
 
+//Recursive Function
 Student* StudentList::searchByMatric(string matricNum) {
-    StudentNode* current = head;
-    while (current) {
-        if (current->data->getMatricNumber() == matricNum) {
-            return current->data;
-        }
-        current = current->next;
+    return searchByMatric(matricNum, head);  // Initial call with the head node
+}
+
+Student* StudentList::searchByMatric(string matricNum, StudentNode* current) {
+    if (!current) {
+        return nullptr;  // Base case: end of list
     }
-    return nullptr;
+    if (current->data->getMatricNumber() == matricNum) {
+        return current->data;  // Found the student
+    }
+    return searchByMatric(matricNum, current->next);  // Recursive call
 }
 
 void StudentList::registerStudent(StudentList& studentList)
