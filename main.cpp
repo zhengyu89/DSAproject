@@ -15,7 +15,7 @@ class Sticker;
 enum class VehicleSortType {
     MODEL,
     COLOR,
-    DRIVER_ID
+    NAME
 };
 
 enum class StudentSortType {
@@ -137,7 +137,6 @@ private:
     
 
 public:
-
     vector<Status*> applicationHistory;
     Student(string matricNum, string name, string password, int year)
         : studentMatricNumber(matricNum), student_name(name),
@@ -189,16 +188,18 @@ private:
     string carColor;
     string carModel;
     string plateNumber;
+    Student* owner;
 
 public:
     Vehicle(string id, string color, string model, string plate)
-        : vehicleID(id), carColor(color), carModel(model), plateNumber(plate) {}
+        : vehicleID(id), carColor(color), carModel(model), plateNumber(plate), owner(NULL) {}
         
     string getVehicleID() const { return vehicleID; }
     string getColor() const { return carColor; }
     string getModel() const { return carModel; }
     string getPlateNumber() const { return plateNumber; }
-    
+    Student* getowner() const{ return owner;}
+    void setowner(Student* student){ owner=student;}
 };
 
 class Sticker {
@@ -401,7 +402,6 @@ Vehicle* VehicleList::searchByPlate(string plateNumber) {
     return nullptr;
 }
 
-// Function definitions outside the class
 bool Student::applySticker(Vehicle* vehicle, string applicationDate) {
     if (vehicles->getSize() >= 1) {
         cout << "You already have a registered vehicle. Only one vehicle allowed per student." << endl;
@@ -416,6 +416,7 @@ bool Student::applySticker(Vehicle* vehicle, string applicationDate) {
     );
 
     applicationHistory.push_back(newApplication);
+    vehicle->setowner(this);
     vehicles->insertAtEnd(vehicle);
 
     cout << "Sticker application submitted successfully for vehicle " 
@@ -499,8 +500,10 @@ void Staff::bubbleSortVehicles(vector<Vehicle*>& vehicles, VehicleSortType sortT
                 case VehicleSortType::COLOR:
                     shouldSwap = vehicles[j]->getColor() > vehicles[j + 1]->getColor();
                     break;
-                case VehicleSortType::DRIVER_ID:
-                    // Implementation depends on how you store driver ID
+                case VehicleSortType::NAME:
+                    if(vehicles[j]->getowner() && vehicles[j+1]->getowner()){
+                        shouldSwap = vehicles[j]->getowner()->getName() >vehicles[j+1]->getowner()->getName();
+                    }
                     break;
             }
             
@@ -571,7 +574,7 @@ void Staff::displayVehicleTable(vector<Vehicle*>& vehicles) {
          << setw(15) << "Plate Number" 
          << setw(20) << "Model" 
          << setw(15) << "Color" 
-         << setw(15) << "Driver ID" << endl;
+         << setw(15) << "Name" << endl;
     cout << setfill('-') << setw(80) << "-" << endl;
     cout << setfill(' ');
 
@@ -581,7 +584,7 @@ void Staff::displayVehicleTable(vector<Vehicle*>& vehicles) {
              << setw(15) << vehicle->getPlateNumber()
              << setw(20) << vehicle->getModel()
              << setw(15) << vehicle->getColor()
-             << setw(15) << "DRIVER_ID" << endl;
+             << setw(15) << vehicle->getowner()->getName() << endl;
     }
     cout << setfill('-') << setw(80) << "-" << endl;
 }
@@ -860,8 +863,7 @@ int main() {
                         VehicleSortType sortType;
                         if (sortChoice == "1") sortType = VehicleSortType::MODEL;
                         else if (sortChoice == "2") sortType = VehicleSortType::COLOR;
-                        else sortType = VehicleSortType::DRIVER_ID;
-                        
+                        else sortType = VehicleSortType::NAME;
                         currentStaff->viewVehicleInfo(&vehicleList, sortType);
                     }
                     else if (staffChoice == "2") {
