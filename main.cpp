@@ -332,15 +332,17 @@ void StudentList::registerStudent(StudentList& studentList)
     cout << "Enter Password: ";
     cin >> password;
     
-    cout << "Enter Year of Study (1-4): ";
+    cout << "Enter Year of Study (2-4): ";
     cin >> year;
     
     // Validate year of study
-    if (year < 1 || year > 4) {
-        cout << "Invalid year of study! Must be between 1 and 4." << endl;
+    if (year < 2 || year > 4) {
+        cout << "Invalid year of study! Must be between 2 and 4." << endl;
         return;
     }
     
+    system("cls");
+
     // Create new student and add to list
     Student* newStudent = new Student(matricNum, name, password, year);
     studentList.insertAtEnd(newStudent);
@@ -407,6 +409,7 @@ void StaffList::registerStaff(StaffList& staffList) {
     cout << "Enter Password: ";
     cin >> password;
     
+    system("cls");
     // Create new staff and add to list
     Staff* newStaff = new Staff(staffId, name, password);
     staffList.insertAtEnd(newStaff);
@@ -554,7 +557,10 @@ void Student::updateInfo() {
         case '3': {
             cout << "Enter new year of study: ";
             cin >> yearOfStudy;
-            cout << "Year of study updated successfully!" << endl;
+           if (yearOfStudy < 2 || yearOfStudy > 4) 
+                cout << "Invalid year of study! Must be between 2 and 4." << endl;
+            else
+                cout << "Year of study updated successfully!" << endl;
             break;
         }
         default:
@@ -764,7 +770,7 @@ int main() {
 
     // Create sample data
     // Sample students
-    Student* student1 = new Student("A23CS5016", "John Doe", "stu123", 2);
+    Student* student1 = new Student("A23CS0229", "John Doe", "stu123", 2);
     Student* student2 = new Student("A23CS5017", "Jane Smith", "pass456", 3);
     Student* student3 = new Student("A23CS5018", "Alice Brown", "alice789", 2);
     Student* student4 = new Student("A23CS5019", "Bob White", "bob2023", 4);
@@ -831,12 +837,12 @@ int main() {
 
 
     while (true) {
-        cout << "\n=== Parking Sticker Management System ===" << endl;
+        cout << "\n=== UTM Parking Sticker Management System ===" << endl;
         cout << "1. Student Login" << endl;
         cout << "2. Staff Login" << endl;
         cout << "3. Register" <<endl;
         cout << "4. Exit" << endl;
-        cout << "Choose option: ";
+        cout << "Choose option (1-4): ";
         
         string choice;
         cin >> choice;
@@ -854,8 +860,9 @@ int main() {
 
             Student* currentStudent = studentList.searchByMatric(matricNum);
             if (currentStudent && currentStudent->getPassword() == password) {
-                cout << "Login successful!" << endl;
                 system("cls");
+                cout << "Login successful!" << endl;
+                
 
                 // Student Menu Loop
                 while (true) {
@@ -899,22 +906,23 @@ int main() {
                         currentStudent->updateInfo();
                     }
                     else if (studentChoice == "4") {
-                       
-                        cout << "Logging out..." << endl;
+
                         system("cls");
+                        cout << "Logging out..." << endl;
+                        
+                        
                         break;
                     }
                     else {
-                        
-                        cout << "Invalid choice!" << endl;
                         system("cls");
+                        cout << "Invalid choice!" << endl;
 
                     }
                 }
             }
             else {
-                cout << "Invalid credentials!" << endl;
                 system("cls");
+                cout << "Invalid credentials!" << endl;
             }
         }
         else if (choice == "2") {
@@ -928,6 +936,7 @@ int main() {
 
             Staff* currentStaff = staffList.searchById(staffId);
             if (currentStaff && currentStaff->getPassword() == password) {
+                system("cls");
                 cout << "Staff login successful!" << endl;
                 
                 // Staff Menu Loop
@@ -942,6 +951,7 @@ int main() {
 
                     string staffChoice;
                     cin >> staffChoice;
+                    system("cls");
 
                     if (staffChoice == "1") {
                         cout << "\nSort by:" << endl;
@@ -951,6 +961,7 @@ int main() {
                         cout << "Choose sorting method: ";
                         string sortChoice;
                         cin >> sortChoice;
+                        system("cls");
                         
                         VehicleSortType sortType;
                         if (sortChoice == "1") sortType = VehicleSortType::MODEL;
@@ -966,6 +977,7 @@ int main() {
                         cout << "Choose sorting method: ";
                         string sortChoice;
                         cin >> sortChoice;
+                        system("cls");
                         
                         StudentSortType sortType;
                         if (sortChoice == "1") sortType = StudentSortType::LAST_REGISTER;
@@ -993,15 +1005,18 @@ int main() {
                         }
                     }
                     else if (staffChoice == "5") {
+                        system("cls");
                         cout << "Logging out..." << endl;
                         break;
                     }
                     else {
+                        system("cls");
                         cout << "Invalid choice!" << endl;
                     }
                 }
             }
             else {
+                system("cls");
                 cout << "Invalid staff credentials!" << endl;
             }
         }
@@ -1015,20 +1030,27 @@ int main() {
             cin >> regChoice;
             
             if (regChoice == "1") {
+                system("cls");
                 studentList.registerStudent(studentList);
+                
             }
             else if (regChoice == "2") {
+                system("cls");
                 staffList.registerStaff(staffList);
+                
             }
             else {
+                system("cls");
                 cout << "Invalid choice!" << endl;
             }
         }
         else if (choice == "4") {
+            system("cls");
             cout << "Thank you for using the Parking Sticker Management System!" << endl;
             break;
         }
         else {
+            system("cls");
             cout << "Invalid choice!" << endl;
         }
     }
