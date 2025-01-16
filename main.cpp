@@ -1,8 +1,11 @@
-// Add these new includes at the top if not already present
 #include <iomanip>
 #include <iostream>
 #include <vector>
 #include <string>
+#include <cstdlib>
+#include <chrono>
+#include <thread>
+
 using namespace std;
 
 // Forward declarations
@@ -755,7 +758,6 @@ void Staff::approveSticker(Student* student) {
     }
 }
 
-
 int main() {
     // Create lists to store data
     StudentList studentList;
@@ -840,10 +842,13 @@ int main() {
         
         string choice;
         cin >> choice;
+        system("cls");
 
         if (choice == "1") {
             // Student Login
+            system("cls");
             string matricNum, password;
+            cout<<"\n === Student Login ===" <<endl;
             cout << "Enter Matric Number: ";
             cin >> matricNum;
             cout << "Enter Password: ";
@@ -852,10 +857,11 @@ int main() {
             Student* currentStudent = studentList.searchByMatric(matricNum);
             if (currentStudent && currentStudent->getPassword() == password) {
                 cout << "Login successful!" << endl;
-                
+                system("cls");
+
                 // Student Menu Loop
                 while (true) {
-                    cout << "\nStudent Menu - Welcome " << currentStudent->getName() << endl;
+                    cout << "\n=== Student Menu - Welcome " << currentStudent->getName() <<" ===" <<endl;
                     cout << "1. Apply for Parking Sticker" << endl;
                     cout << "2. View Application Status" << endl;
                     cout << "3. Update Personal Information" << endl;
@@ -864,10 +870,13 @@ int main() {
 
                     string studentChoice;
                     cin >> studentChoice;
+                    system("cls");
+                    
 
                     if (studentChoice == "1") {
                         // Apply for sticker
                         string plateNum, color, model;
+                        cout<<"=== Vehicle Sticker Application ==="<<endl;
                         cout << "Enter Vehicle Details:" << endl;
                         cout << "Plate Number: ";
                         cin >> plateNum;
@@ -876,6 +885,7 @@ int main() {
                         cout << "Model: ";
                         cin.ignore();
                         getline(cin, model);
+                        system("cls");
 
                         Vehicle* newVehicle = new Vehicle("V" + to_string(vehicleList.getSize() + 1),
                                                         color, model, plateNum);
@@ -883,27 +893,36 @@ int main() {
                         currentStudent->applySticker(newVehicle, "2025-01-15");
                     }
                     else if (studentChoice == "2") {
+                        
                         currentStudent->viewStatus();
                     }
                     else if (studentChoice == "3") {
+                        
                         currentStudent->updateInfo();
                     }
                     else if (studentChoice == "4") {
+                       
                         cout << "Logging out..." << endl;
+                        system("cls");
                         break;
                     }
                     else {
+                        
                         cout << "Invalid choice!" << endl;
+                        system("cls");
+
                     }
                 }
             }
             else {
                 cout << "Invalid credentials!" << endl;
+                system("cls");
             }
         }
         else if (choice == "2") {
             // Staff Login
             string staffId, password;
+            cout<<"\n === Staff Login ===" <<endl;
             cout << "Enter Staff ID: ";
             cin >> staffId;
             cout << "Enter Password: ";
