@@ -1,3 +1,12 @@
+/*DSA - MINI PROJECT
+SECTION:9
+TITLE:UTM Parking Sticker Management System
+ MEMBER 1:CHANG WEI LAM 
+ MEMBER 2:KAREN VOON XIU WEN
+ MEMBER 3:TAN ZHENG YU
+ MEMBER 4:HUANG BOSHENG
+*/
+
 #include <iomanip>
 #include <iostream>
 #include <vector>
@@ -957,7 +966,7 @@ int main() {
                         cout << "\nSort by:" << endl;
                         cout << "1. Model" << endl;
                         cout << "2. Color" << endl;
-                        cout << "3. Driver ID" << endl;
+                        cout << "3. Student Name" << endl;
                         cout << "Choose sorting method: ";
                         string sortChoice;
                         cin >> sortChoice;
